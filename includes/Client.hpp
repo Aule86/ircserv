@@ -9,8 +9,14 @@ class Client
 	private:
 		int	_fd;
 		std::string _buffer;
+		
 
 	public:
+		std::string nick;
+		std::string pass;
+		std::string user;
+		bool registered;
+	
 		Client(int fd);
 		~Client	();
 
