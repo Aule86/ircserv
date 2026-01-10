@@ -30,9 +30,9 @@ int main(int argc, char **argv)
     }
     try
     {
-        /* signal(SIGINT, Server::SignalResponse);
+        signal(SIGINT, Server::SignalResponse);
 		signal(SIGQUIT, Server::SignalResponse);// hay que hacer el gestor de señales para cerrar todos los sockets
-		signal(SIGPIPE, SIG_IGN); */
+		signal(SIGPIPE, SIG_IGN);
 
         if(!ValidPort(argv[1]) || !*argv[2])
         {
