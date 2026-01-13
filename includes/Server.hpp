@@ -30,11 +30,12 @@ class Server
 //includes de sockets
 #include <netinet/in.h>
 #include <fcntl.h>
-
-
-
+#include <map>
+#include <unistd.h>
 
 #define RED "\e[1;31m"
+
+
 
 class Server
 {
@@ -44,6 +45,9 @@ class Server
             static bool signal;
             int server_shocket;
             std::vector<struct pollfd> fds;
+            std::map<int, Client *> clients;
+
+            struct pollfd new_client;
     public:
             Server();
             ~Server();
@@ -64,5 +68,7 @@ class Server
             void new_conection();
             void data();
 };
+
+class Client;
 
 #endif
