@@ -2,6 +2,19 @@
 
 Client::Client(int fd) : _fd(fd), registered(false) {}
 
+Client &Client::operator=(Client const &src){
+	if (this != &src){
+		this->_nick = src._nick;
+		this->_user = src._user;
+		this->_fd = src._fd;
+		this->_buffer = src._buffer;
+		this->registered = src.registered;
+		this->_ip = src._ip;
+		this->registered = src.registered;
+	}
+	return *this;
+}
+
 Client::~Client()
 {
 	close(_fd);
@@ -12,17 +25,14 @@ int Client::getFd() const
 	return _fd;
 }
 
-bool Client::receiveData()
-{
-	char	tmp[512];
-	ssize_t	bytes = recv(_fd, tmp, sizeof(tmp), 0);
+std::string Client::getBuffer(){return _buffer;}
+std::string Client::getIp() { return _ip; }
 
-	if (bytes <= 0)
-		return false;
-	
-	_buffer.append(tmp, bytes);
-	return true;
-}
+
+void Client::setIpAdd(const std::string &ip) { _ip = ip; }
+void Client::setBuffer(const std::string &buffer) { _buffer += buffer; }
+
+
 
 std::vector<std::string> Client::extractLines()
 {

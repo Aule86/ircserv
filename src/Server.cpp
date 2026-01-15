@@ -1,4 +1,5 @@
 #include "../includes/Server.hpp"
+#include "../includes/Client.hpp"
 
 Server::Server(){}
 
@@ -25,6 +26,14 @@ std::string Server::getPassword()
 {
     return this->password;
 }
+Client* Server::getClient(int fd)
+{
+    std::map<int, Client*>::iterator it = clients.find(fd);
+    if (it == clients.end())
+        return NULL;
+    return it->second;
+}
+
 
 void Server::ServerClose()
 {
@@ -67,31 +76,61 @@ void Server::setupServerSocket()
 
     fcntl(server_shocket, F_SETFL, O_NONBLOCK);
 }
-
-
 void Server::new_conection()
 {
-    sockaddr_in client_addr; // aqui iria la estructura de Client y esa movida acepta iP mas puerto IPv4
-    socklen_t client_len = sizeof(client_addr);
-    int client_fd = accept(server_shocket, (sockaddr *)&client_addr, &client_len);
-    
-    if (client_fd == -1)
+    sockaddr_in cliadd;
+    socklen_t len = sizeof(cliadd);
+    memset(&cliadd, 0, sizeof(cliadd));
+
+    int fd = accept(server_shocket, (sockaddr *)&cliadd, &len);
+    if (fd == -1)
         return;
-    fcntl(client_fd, F_SETFL, O_NONBLOCK);
 
-    //seteando la estructura de pollfd para el nuevo cliente
-    pollfd client_pollfd;
-    client_pollfd.fd = client_fd;
-    client_pollfd.events = POLLIN;
-    client_pollfd.revents = 0;
+    fcntl(fd, F_SETFL, O_NONBLOCK);
 
-    fds.push_back(client_pollfd);
 
-    std::cout << "New connection accepted, fd: " << client_fd << std::endl;
+    new_cli.fd = fd;
+    new_cli.events = POLLIN;
+    new_cli.revents = 0;
+    fds.push_back(new_cli);
+
+    Client *cli = new Client(fd);
+
+    char ip[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &cliadd.sin_addr, ip, INET_ADDRSTRLEN);
+    cli->setIpAdd(ip);
+
+    clients[fd] = cli;
+
+    std::cout << "Client <" << fd << "> Connected from " << ip << std::endl;
+
 }
-void Server::data()
+
+
+void Server::receiveData(int fd)
 {
-    std::cout << "Data received from client" << std::endl;
+	char	tmp[512];
+	memset(tmp, 0, sizeof(tmp));
+	Client *cli = getClient(fd);
+	ssize_t	bytes = recv(fd, tmp, sizeof(tmp) - 1, 0);
+
+	if (bytes <= 0)
+    {
+        std::cout << RED << "Client with fd " << fd << " disconnected." << std::endl;
+		return;
+
+    }else
+    {
+        cli->setBuffer(tmp);
+        tmp[bytes] = '\0';
+
+        std::cout << "[CLIENT " << fd << "] " << tmp;
+
+    }
+    return;
+	
+	
+	
 }
 
 void Server::start(int port, std::string password)
@@ -127,7 +166,7 @@ void Server::start(int port, std::string password)
                 }
                 else
                 {
-                    data();
+                    receiveData(fds[i].fd);
                 }
             }
             fds[i].revents = 0; // limpiar los eventos

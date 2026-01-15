@@ -25,17 +25,21 @@ class Server
 #include <vector>
 #include <string>
 #include <cstring>
-
+#include <set>
 
 //includes de sockets
 #include <netinet/in.h>
 #include <fcntl.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+
+
 #include <map>
 #include <unistd.h>
 
 #define RED "\e[1;31m"
 
-
+class Client;
 
 class Server
 {
@@ -46,6 +50,7 @@ class Server
             int server_shocket;
             std::vector<struct pollfd> fds;
             std::map<int, Client *> clients;
+            struct pollfd new_cli;
 
             struct pollfd new_client;
     public:
@@ -55,6 +60,7 @@ class Server
             //Getters
             int getPort();
             std::string getPassword();
+            Client* getClient(int fd);
 
             //Setters
 
@@ -66,7 +72,7 @@ class Server
             void setupServerSocket();
             void ServerClose();
             void new_conection();
-            void data();
+            void receiveData(int fd);
 };
 
 class Client;
