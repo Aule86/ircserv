@@ -7,4 +7,3 @@ Channel::Channel()
 
 Channel::~Channel()
 {}
-

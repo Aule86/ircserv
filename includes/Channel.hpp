@@ -11,6 +11,8 @@ class Channel
 	public:
 		Channel();
 		~Channel();
+		Channel(Channel const &src);
+		Channel &operator=(Channel const &src);
 };
 
 #endif
