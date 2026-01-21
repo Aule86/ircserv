@@ -15,13 +15,15 @@ class Client
 	private:
 		int	_fd;
 		std::string _buffer;
-
-	public:
 		std::string _nick;
-		std::string _pass;
 		std::string _user;
 		std::string	_ip;
-		bool registered;
+
+		bool _registered;
+		bool _hasPass;
+
+
+	public:
 	
 		Client(int fd);
 		~Client	();
@@ -30,22 +32,27 @@ class Client
 
 		int	getFd() const;
 		Client* getClient(int fd);
-		std::string getBuffer();
-		
+		std::string getBuffer() const;
+		std::string  getIp() const;
+		const std::string &getNick() const;
+		const std::string &getUser() const;
 
-		//buffer
-		
-		std::vector<std::string> extractLines();
+		bool isRegistered() const;
+		bool hasPass() const;
 
-		//irc commands
-		void handdleCommand(const std::string &line);
-		void checkRegistration();
+
 
 		void setIpAdd(const std::string &ip);
 		void setBuffer(const std::string &buffer);
+		void setNick(const std::string &nick);
+		void setUser(const std::string &user);
+		void setHasPass(bool v);
+		void setRegistered(bool v);
 		
 
-		std::string  getIp();
+		//buffer
+		std::vector<std::string> extractLines();
+		
 
 };
 

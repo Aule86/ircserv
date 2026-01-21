@@ -43,36 +43,46 @@ class Client;
 
 class Server
 {
-    private:
-            int port;
-            std::string password;
-            static bool signal;
-            int server_shocket;
-            std::vector<struct pollfd> fds;
-            std::map<int, Client *> clients;
-            struct pollfd new_cli;
+	private:
+		int port;
+		std::string password;
+		static bool signal;
+		int server_shocket;
+		std::vector<struct pollfd> fds;
+		std::map<int, Client *> clients;
+		struct pollfd new_cli;
 
-            struct pollfd new_client;
-    public:
-            Server();
-            ~Server();
+		struct pollfd new_client;
+	public:
+		Server();
+		~Server();
 
-            //Getters
-            int getPort();
-            std::string getPassword();
-            Client* getClient(int fd);
+		//Getters
+		int getPort();
+		std::string getPassword();
+		Client* getClient(int fd);
 
-            //Setters
+		//Setters
 
-            void setPort(int port);
-            void setPassword(std::string password);
+		void setPort(int port);
+		void setPassword(std::string password);
 
-            static void SignalResponse(int signum);
-            void start(int port, std::string password);
-            void setupServerSocket();
-            void ServerClose();
-            void new_conection();
-            void receiveData(int fd);
+		static void SignalResponse(int signum);
+		void start(int port, std::string password);
+		void setupServerSocket();
+		void ServerClose();
+		void new_conection();
+		void receiveData(int fd);
+
+		//irc commands
+		void handleCommand(Client *cli, const std::string &line);
+		void tryRegister(Client &cli);
+
+		void handlePASS(Client *cli, std::istringstream &iss);
+		void handleNICK(Client *cli, std::istringstream &iss);
+		void handleUSER(Client *cli, std::istringstream &iss);
+
+
 };
 
 class Client;
