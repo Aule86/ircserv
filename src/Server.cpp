@@ -1,5 +1,6 @@
 #include "../includes/Server.hpp"
 #include "../includes/Client.hpp"
+#include "../includes/Aunth.hpp"
 
 Server::Server(){}
 
@@ -36,6 +37,13 @@ void Server::handleCommand(Client *cli, const std::string &lines)
 	std::string cmd;
 	iss >> cmd;
 
+	if (!Aunth::canExecuteCommand(*cli, cmd))
+	{
+		std::string error = Aunth::getAuthError(*cli);
+		send(cli->getFd(), error.c_str(), error.length(), 0);
+		return;
+	}
+
 	if (cmd == "PASS")
 		handlePASS(cli, iss);
 	else if (cmd == "NICK")
@@ -50,13 +58,14 @@ void Server::tryRegister(Client &cli)
 {
 	if (cli.isRegistered())
 		return;
-	if (cli.hasPass() && !cli.getNick().empty() && !cli.getUser().empty())
+	if (Aunth::isAuthenticated(cli))
 	{
 		cli.setRegistered(true);
 
 		std::string msg = ":ircserv 001 " + cli.getNick() + " :Welcome to the IRC server\r\n";
 
 		send(cli.getFd(), msg.c_str(), msg.length(), 0);
+		std::cout << "Client " << cli.getFd() << " (" << cli.getNick() << ") successfully registered" << std::endl;
 	}
 }
 
@@ -221,12 +230,9 @@ void Server::start(int port, std::string password)
 					receiveData(fds[i].fd);
 				}
 			}
-			fds[i].revents = 0; // limpiar los eventos
+			fds[i].revents = 0;
 		}
 	}
 
 	ServerClose();
-
-	// Aquí iría la lógica para iniciar el servidor, aceptar conexiones, etc.
 }
-
