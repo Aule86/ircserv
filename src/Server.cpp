@@ -11,16 +11,35 @@ void Server::handlePASS(Client *cli, std::istringstream &iss)
 	std::string pass;
 	iss >> pass;
 
+	if (pass.empty())
+	{
+		std::string msg = "ERROR :Password is empty\r\n";
+		send(cli->getFd(), msg.c_str(), msg.length(), 0);
+		return;
+	}
+
 	if (pass == password)
 		cli->setHasPass(true);
 	else
-		std::cout << cli << "464, Password incorrect" << std::endl;
+	{
+		std::string msg = "ERROR :Password incorrect\r\n";
+		send(cli->getFd(), msg.c_str(), msg.length(), 0);
+		std::cout << "Client " << cli->getFd() << " - Password incorrect" << std::endl;
+	}
 }
 
 void Server::handleNICK(Client *cli, std::istringstream &iss)
 {
 	std::string nick;
 	iss >> nick;
+	
+	if (nick.empty())
+	{
+		std::string msg = "ERROR :Nickname is empty\r\n";
+		send(cli->getFd(), msg.c_str(), msg.length(), 0);
+		return;
+	}
+	
 	cli->setNick(nick);
 }
 
@@ -28,6 +47,14 @@ void Server::handleUSER(Client *cli, std::istringstream &iss)
 {
 	std::string user;
 	iss >> user;
+	
+	if (user.empty())
+	{
+		std::string msg = "ERROR :Username is empty\r\n";
+		send(cli->getFd(), msg.c_str(), msg.length(), 0);
+		return;
+	}
+	
 	cli->setUser(user);
 }
 
