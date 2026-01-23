@@ -37,6 +37,11 @@ void Client::setUser(const std::string &user) { _user = user; }
 void Client::setHasPass(bool v) { _hasPass = v; }
 void Client::setRegistered(bool v) { _registered = v; }
 
+// Envía un mensaje directamente al socket del cliente
+void Client::sendMessage(const std::string &msg)
+{
+	send(_fd, msg.c_str(), msg.length(), 0);
+}
 
 std::vector<std::string> Client::extractLines()
 {

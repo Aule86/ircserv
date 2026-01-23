@@ -40,7 +40,7 @@ class Client
 		bool isRegistered() const;
 		bool hasPass() const;
 
-
+		void sendMessage(const std::string &msg);
 
 		void setIpAdd(const std::string &ip);
 		void setBuffer(const std::string &buffer);

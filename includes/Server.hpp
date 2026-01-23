@@ -1,19 +1,3 @@
-/* #ifndef SERVER_HPP
-#define SERVER_HPP
-
-#include "Client.hpp"
-#include <string>
-#include <iostream>
-#include <cstdlib>
-#include <csignal>
-
-
-class Server
-{
-
-}
-
-#endif */
 
 #ifndef SERVER
 #define SERVER
@@ -39,6 +23,7 @@ class Server
 
 #define RED "\e[1;31m"
 
+class Channel;
 class Client;
 
 class Server
@@ -50,6 +35,7 @@ class Server
 		int server_shocket;
 		std::vector<struct pollfd> fds;
 		std::map<int, Client *> clients;
+		std::map<std::string, Channel*> channels;
 		struct pollfd new_cli;
 
 		struct pollfd new_client;
@@ -82,9 +68,16 @@ class Server
 		void handleNICK(Client *cli, std::istringstream &iss);
 		void handleUSER(Client *cli, std::istringstream &iss);
 
+		//channel
+		Channel* getChannel(const std::string &name);
+		Channel* createChannel(const std::string &name, Client *creator);
+		void removeChannel(const std::string &name);
+
+		//cmd
+		void handleJOIN(Client *cli, std::istringstream &iss);
+
+
 
 };
-
-class Client;
 
 #endif

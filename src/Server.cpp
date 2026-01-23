@@ -1,6 +1,7 @@
 #include "../includes/Server.hpp"
 #include "../includes/Client.hpp"
 #include "../includes/Aunth.hpp"
+#include "../includes/Channel.hpp"
 
 Server::Server(){}
 
@@ -77,6 +78,8 @@ void Server::handleCommand(Client *cli, const std::string &lines)
 		handleNICK(cli, iss);
 	else if (cmd == "USER")
 		handleUSER(cli, iss);
+	else if (cmd == "JOIN")
+		handleJOIN(cli, iss);
 
 	tryRegister(*cli);
 }
@@ -262,4 +265,62 @@ void Server::start(int port, std::string password)
 	}
 
 	ServerClose();
+}
+
+// Busca y devuelve un canal por nombre (o NULL si no existe)
+Channel* Server::getChannel(const std::string &name)
+{
+    std::map<std::string, Channel*>::iterator it = channels.find(name);
+    if (it == channels.end())
+        return NULL;
+    return it->second;
+}
+
+// Crea un nuevo canal y asigna al creador como operador
+Channel* Server::createChannel(const std::string &name, Client *creator)
+{
+	if (getChannel(name))
+		return getChannel(name);
+
+	Channel *ch = new Channel(name);
+	channels[name] = ch;
+	ch->addOperator(creator); // El creador es operador
+	return ch;
+}
+
+// Elimina un canal si está vacío
+void Server::removeChannel(const std::string &name)
+{
+	Channel *ch = getChannel(name);
+	if (ch && ch->getClients().empty())
+	{
+		delete ch;
+		channels.erase(name);
+	}
+}
+
+// Comando IRC para unirse a un canal
+void Server::handleJOIN(Client *cli, std::istringstream &iss)
+{
+    std::string channelName;
+    iss >> channelName;
+    
+    if (channelName.empty() || channelName[0] != '#')
+    {
+        std::string err = ":server 403 " + cli->getNick() + " " + channelName + " :No such channel\r\n";
+        send(cli->getFd(), err.c_str(), err.length(), 0);
+        return;
+    }
+    
+    Channel *ch = getChannel(channelName);
+    if (!ch)
+        ch = createChannel(channelName, cli);
+    
+    ch->addClient(cli);
+    
+    // Notificar al cliente que hizo JOIN
+    std::string joinMsg = ":" + cli->getNick() + "!~" + cli->getUser() + "@localhost JOIN " + channelName + "\r\n";
+    ch->broadcast(joinMsg);
+    
+    std::cout << "Client " << cli->getNick() << " joined " << channelName << std::endl;
 }
