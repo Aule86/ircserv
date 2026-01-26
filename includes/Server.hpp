@@ -47,9 +47,9 @@ class Server
 		int getPort();
 		std::string getPassword();
 		Client* getClient(int fd);
+		Client *getClientByName(const std::string &nick) const;
 
 		//Setters
-
 		void setPort(int port);
 		void setPassword(std::string password);
 
@@ -75,8 +75,12 @@ class Server
 
 		//cmd
 		void handleJOIN(Client *cli, std::istringstream &iss);
+		void handleKICK(Server *server, Client *cli, std::istringstream &iss);
+		void handlePRIVMSG(Server *server, Client *cli, std::istringstream &iss);
 
-
+		//errores y replies
+		void Server::sendError(Client *cli, const std::string &code, const std::string &msg);
+		void Server::sendReply(Client *cli, const std::string &code, const std::string &msg);
 
 };
 

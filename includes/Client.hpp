@@ -22,13 +22,11 @@ class Client
 		bool _registered;
 		bool _hasPass;
 
-
 	public:
 	
 		Client(int fd);
 		~Client	();
 		Client &operator=(Client const &src);
-
 
 		int	getFd() const;
 		Client* getClient(int fd);
@@ -36,6 +34,7 @@ class Client
 		std::string  getIp() const;
 		const std::string &getNick() const;
 		const std::string &getUser() const;
+		std::string &getPrefix() const;
 
 		bool isRegistered() const;
 		bool hasPass() const;
@@ -49,10 +48,8 @@ class Client
 		void setHasPass(bool v);
 		void setRegistered(bool v);
 		
-
 		//buffer
 		std::vector<std::string> extractLines();
-		
 
 };
 

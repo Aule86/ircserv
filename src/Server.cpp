@@ -7,6 +7,26 @@ Server::Server(){}
 
 Server::~Server(){}
 
+void Server::sendReply(Client *cli, const std::string &code, const std::string &msg)
+{
+	if (!cli)
+		return ;
+	
+	std::string server_name = "ircserv";
+	std::string fullmsg = ":" + server_name + " " + code + " " + cli->getNick() + " :" + msg + "\r\n";
+	cli->sendMessage(fullmsg);
+}
+
+void Server::sendError(Client *cli, const std::string &code, const std::string &msg)
+{
+	if (!cli)
+		return ;
+	
+	std::string server_name = "ircserv";
+	std::string fullmsg = ":" + server_name + " " + code + " " + cli->getNick() + " :" + msg + "\r\n";
+	cli->sendMessage(fullmsg);
+}
+
 void Server::handlePASS(Client *cli, std::istringstream &iss)
 {
 	std::string pass;
@@ -80,6 +100,10 @@ void Server::handleCommand(Client *cli, const std::string &lines)
 		handleUSER(cli, iss);
 	else if (cmd == "JOIN")
 		handleJOIN(cli, iss);
+	else if (cmd == "KICK")
+		handleKICK(this, cli, iss);
+	else if (cmd == "PRIVMSG")
+		handlePRIVMSG(this, cli, iss);
 
 	tryRegister(*cli);
 }
@@ -126,6 +150,15 @@ Client* Server::getClient(int fd)
 	return it->second;
 }
 
+Client *Server::getClientByName(const std::string &nick) const
+{
+	for (std::map<int, Client*>::const_iterator it = clients.begin(); it != clients.end(); ++it)
+	{
+		if(it->second->getNick() == nick)
+			return it->second;
+	}
+	return (NULL);
+}
 
 void Server::ServerClose()
 {
@@ -270,10 +303,10 @@ void Server::start(int port, std::string password)
 // Busca y devuelve un canal por nombre (o NULL si no existe)
 Channel* Server::getChannel(const std::string &name)
 {
-    std::map<std::string, Channel*>::iterator it = channels.find(name);
-    if (it == channels.end())
-        return NULL;
-    return it->second;
+	std::map<std::string, Channel*>::iterator it = channels.find(name);
+	if (it == channels.end())
+		return NULL;
+	return it->second;
 }
 
 // Crea un nuevo canal y asigna al creador como operador
@@ -297,30 +330,4 @@ void Server::removeChannel(const std::string &name)
 		delete ch;
 		channels.erase(name);
 	}
-}
-
-// Comando IRC para unirse a un canal
-void Server::handleJOIN(Client *cli, std::istringstream &iss)
-{
-    std::string channelName;
-    iss >> channelName;
-    
-    if (channelName.empty() || channelName[0] != '#')
-    {
-        std::string err = ":server 403 " + cli->getNick() + " " + channelName + " :No such channel\r\n";
-        send(cli->getFd(), err.c_str(), err.length(), 0);
-        return;
-    }
-    
-    Channel *ch = getChannel(channelName);
-    if (!ch)
-        ch = createChannel(channelName, cli);
-    
-    ch->addClient(cli);
-    
-    // Notificar al cliente que hizo JOIN
-    std::string joinMsg = ":" + cli->getNick() + "!~" + cli->getUser() + "@localhost JOIN " + channelName + "\r\n";
-    ch->broadcast(joinMsg);
-    
-    std::cout << "Client " << cli->getNick() << " joined " << channelName << std::endl;
 }

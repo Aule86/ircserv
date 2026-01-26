@@ -10,6 +10,7 @@ Channel::~Channel()
 	_clients.clear();
 	_operators.clear();
 }
+
 const std::string& Channel::getName() const
 {
     return _name;
