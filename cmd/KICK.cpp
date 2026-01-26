@@ -9,10 +9,10 @@ static bool parseKick(std::istringstream &iss, std::string &channel, std::string
 	iss >> channel >> target;
 	std::getline(iss, reason);
 
-	if (!reason.empty() && reason[0] == ' ');
-		reason.erase(0, 1);
-	if (!reason.empty() && reason[0] == ':');
-		reason.erase(0, 1);
+	if (!reason.empty() && reason[0] == ' ')
+		reason.erase(0,1);
+	if (!reason.empty() && reason[0] == ':')
+		reason.erase(0,1);
 	return !(channel.empty() || target.empty());
 }
 
@@ -55,7 +55,7 @@ static void executeKick(Channel *chan, Client *cli, Client *target, const std::s
 	chan->removeClient(target);
 }
 
-void handleKICK(Server *server, Client *cli, std::istringstream &iss)
+void Server::handleKICK(Server *server, Client *cli, std::istringstream &iss)
 {
 	std::string channelName;
 	std::string target;

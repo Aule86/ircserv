@@ -18,6 +18,7 @@ class Client
 		std::string _nick;
 		std::string _user;
 		std::string	_ip;
+		std::string _prefix;
 
 		bool _registered;
 		bool _hasPass;
@@ -34,7 +35,7 @@ class Client
 		std::string  getIp() const;
 		const std::string &getNick() const;
 		const std::string &getUser() const;
-		std::string &getPrefix() const;
+		const std::string &getPrefix() const;
 
 		bool isRegistered() const;
 		bool hasPass() const;

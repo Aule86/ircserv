@@ -79,8 +79,8 @@ class Server
 		void handlePRIVMSG(Server *server, Client *cli, std::istringstream &iss);
 
 		//errores y replies
-		void Server::sendError(Client *cli, const std::string &code, const std::string &msg);
-		void Server::sendReply(Client *cli, const std::string &code, const std::string &msg);
+		void sendError(Client *cli, const std::string &code, const std::string &msg);
+		void sendReply(Client *cli, const std::string &code, const std::string &msg);
 
 };
 

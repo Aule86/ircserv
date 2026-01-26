@@ -11,6 +11,7 @@ Client &Client::operator=(Client const &src){
 		this->_ip = src._ip;
 		this->_registered = src._registered;
 		this->_hasPass = src._hasPass;
+		this->_prefix = src._prefix;
 	}
 	return *this;
 }
@@ -27,31 +28,29 @@ std::string Client::getIp() const { return _ip; }
 const std::string &Client::getNick() const { return _nick; }
 const std::string &Client::getUser() const { return _user; }
 //admin!user@host
-std::string &Client::getPrefix() const 
-{
-	std::string nick = _nick;
-	std::string user = _user;
-	std::string ip = _ip;
-
-	if (nick.empty())
-		nick = "unknown";
-	if (user.empty())
-		user = "unknown";
-	if (ip.empty())
-		ip = "localhost";
-	
-	std::string prefix = nick + "!" + user + "@" + ip;
-	return prefix;
-}
+const std::string &Client::getPrefix() const {return _prefix;}
 
 bool Client::isRegistered() const { return _registered; }
 bool Client::hasPass() const { return _hasPass; }
 
 //setters
-void Client::setIpAdd(const std::string &ip) { _ip = ip; }
+void Client::setIpAdd(const std::string &ip)
+{ 
+	_ip = ip;
+	_prefix = _nick + "!" + _user + "@" + _ip;
+}
 void Client::setBuffer(const std::string &buffer) { _buffer += buffer; }
-void Client::setNick(const std::string &nick) { _nick = nick; }
-void Client::setUser(const std::string &user) { _user = user; }
+void Client::setNick(const std::string &nick)
+{ 
+	_nick = nick; 
+	_prefix = _nick + "!" + _user + "@" + _ip;
+}
+void Client::setUser(const std::string &user)
+{
+	_user = user;
+	_prefix = _nick + "!" + _user + "@" + _ip;
+	
+}
 void Client::setHasPass(bool v) { _hasPass = v; }
 void Client::setRegistered(bool v) { _registered = v; }
 

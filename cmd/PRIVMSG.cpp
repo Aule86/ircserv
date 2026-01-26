@@ -49,7 +49,7 @@ static void sendPrivmsgToNick(Server *server, Client *cli, const std::string &ta
 	dest->sendMessage(msg);
 }
 
-void handlePRIVMSG(Server *server, Client *cli, std::istringstream &iss)
+void Server::handlePRIVMSG(Server *server, Client *cli, std::istringstream &iss)
 {
 	std::string target;
 	std::string message;
@@ -69,5 +69,5 @@ void handlePRIVMSG(Server *server, Client *cli, std::istringstream &iss)
 	if (target[0] == '#')
 		sendPrivmsgToChannel(server, cli, target, message);
 	else
-		sendPrivmsgToChannel(server, cli, target, message);
+		sendPrivmsgToNick(server, cli, target, message);
 }
