@@ -6,15 +6,16 @@
 static std::string buildQuitMsg(Client *client, const std::string &message)
 {
 	if (message.empty())
-		return ":" + client->getNick() + " QUIT :Client Quit";
+		return ":" + client->getNick() + " QUIT :Client Quit\r\n";
 	else
-		return ":" + client->getNick() + " QUIT :" + message;
+		return ":" + client->getNick() + " QUIT :" + message + "\r\n";
 }
 
 static void quitFromChannel(Channel *channel, Client *client, const std::string &quitMsg)
 {
 	if (!channel || !channel->hasClient(client))
 		return ;
+
 	channel->broadcast(quitMsg, client);
 	channel->removeClient(client);
 }
@@ -32,20 +33,19 @@ static void removeClientFromChannels(Server *server, Client *client, const std::
 void Server::handleQUIT(Client *cli, std::istringstream &iss)
 {
 	std::string message;
-	if (!(iss >> message))
-		message = "Client Quit";
-	else
-	{
-		if (message[0] == ':')
-			message = message.substr(1);
-	}
+
+	if (iss.peek() == ' ')
+		iss.get();
+	std::getline(iss, message);
+	if (!message.empty() && message[0] == ':')
+		message = message.substr(1);
 	std::string quitMsg = buildQuitMsg(cli, message);
 
 	removeClientFromChannels(this, cli, quitMsg);
-
 	cli->sendMessage(quitMsg);
-
 	removeClient(cli->getFd());
 
 	close(cli->getFd());
+	std::cout << "[CLIENT " << cli->getFd() << "] QUIT: " << message << std::endl;
+
 }
