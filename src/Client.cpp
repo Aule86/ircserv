@@ -1,6 +1,6 @@
 #include "../includes/Client.hpp"
 
-Client::Client(int fd) : _fd(fd), _registered(false), _hasPass(false) {}
+Client::Client(int fd) : _fd(fd), _registered(false), _hasPass(false), _hasNick(false), _hasUser(false) {}
 
 Client &Client::operator=(Client const &src){
 	if (this != &src){
@@ -11,6 +11,8 @@ Client &Client::operator=(Client const &src){
 		this->_ip = src._ip;
 		this->_registered = src._registered;
 		this->_hasPass = src._hasPass;
+		this->_hasNick = src._hasNick;
+		this->_hasUser = src._hasUser;
 		this->_prefix = src._prefix;
 	}
 	return *this;
@@ -32,6 +34,8 @@ const std::string &Client::getPrefix() const {return _prefix;}
 
 bool Client::isRegistered() const { return _registered; }
 bool Client::hasPass() const { return _hasPass; }
+bool Client::hasNick() const { return _hasNick; }
+bool Client::hasUser() const { return _hasUser; }
 
 //setters
 void Client::setIpAdd(const std::string &ip)
@@ -52,24 +56,9 @@ void Client::setUser(const std::string &user)
 	
 }
 void Client::setHasPass(bool v) { _hasPass = v; }
+void Client::setHasNick(bool v) { _hasNick = v; }
+void Client::setHasUser(bool v) { _hasUser = v; }
 void Client::setRegistered(bool v) { _registered = v; }
-
-/* std::vector<std::string> Client::extractLines()
-{
-	std::vector<std::string>	lines;
-	size_t	pos;
-
-	while((pos = _buffer.find("\n")) != std::string::npos)
-	{
-		std::string line = _buffer.substr(0, pos);
-		if (!line.empty() && line.back() == '\r')
-			line.pop_back();
-
-		lines.push_back(line);
-		_buffer.erase(0, pos + 1);
-	}
-	return lines;
-} */
 
 std::vector<std::string> Client::extractLines()
 {
@@ -97,5 +86,3 @@ void Client::sendMessage(const std::string &msg)
 {
 	::send(_fd, msg.c_str(), msg.size(), 0);
 }
-
-

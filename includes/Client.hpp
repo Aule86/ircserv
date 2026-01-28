@@ -22,6 +22,8 @@ class Client
 
 		bool _registered;
 		bool _hasPass;
+		bool _hasNick;
+		bool _hasUser;
 
 	public:
 	
@@ -39,6 +41,8 @@ class Client
 
 		bool isRegistered() const;
 		bool hasPass() const;
+		bool hasNick() const;
+		bool hasUser() const;
 
 		void sendMessage(const std::string &msg);
 
@@ -47,6 +51,8 @@ class Client
 		void setNick(const std::string &nick);
 		void setUser(const std::string &user);
 		void setHasPass(bool v);
+		void setHasNick(bool v);
+		void setHasUser(bool v);
 		void setRegistered(bool v);
 		
 		//buffer

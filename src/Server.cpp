@@ -39,8 +39,19 @@ void Server::handlePASS(Client *cli, std::istringstream &iss)
 		return;
 	}
 
+	// No permitir PASS si ya se ha establecido
+	if (cli->hasPass())
+	{
+		std::string msg = "ERROR :Password already set\r\n";
+		send(cli->getFd(), msg.c_str(), msg.length(), 0);
+		return;
+	}
+
 	if (pass == password)
+	{
 		cli->setHasPass(true);
+		std::cout << "Client " << cli->getFd() << " - Password accepted" << std::endl;
+	}
 	else
 	{
 		std::string msg = "ERROR :Password incorrect\r\n";
@@ -60,23 +71,62 @@ void Server::handleNICK(Client *cli, std::istringstream &iss)
 		send(cli->getFd(), msg.c_str(), msg.length(), 0);
 		return;
 	}
+
+	// No permitir NICK si ya se ha establecido
+	if (cli->hasNick())
+	{
+		std::string msg = "ERROR :Nickname already set\r\n";
+		send(cli->getFd(), msg.c_str(), msg.length(), 0);
+		return;
+	}
 	
 	cli->setNick(nick);
+	cli->setHasNick(true);
+	std::cout << "Client " << cli->getFd() << " - Nickname set to: " << nick << std::endl;
 }
 
 void Server::handleUSER(Client *cli, std::istringstream &iss)
 {
-	std::string user;
-	iss >> user;
+	std::string user, hostname, servername, realname;
 	
-	if (user.empty())
+	// Parsear: USER <username> <hostname> <servername> :<realname>
+	// Ejemplo: USER username 0 * :Real Name
+	iss >> user >> hostname >> servername;
+	std::getline(iss, realname);
+	
+	// Limpiar espacios y ':' al inicio del realname
+	if (!realname.empty() && realname[0] == ' ')
+		realname.erase(0, 1);
+	if (!realname.empty() && realname[0] == ':')
+		realname.erase(0, 1);
+	
+	// Validar que todos los parámetros estén presentes
+	if (user.empty() || hostname.empty() || servername.empty())
 	{
-		std::string msg = "ERROR :Username is empty\r\n";
+		std::string msg = "ERROR :Not enough parameters. Usage: USER <username> 0 * :<realname>\r\n";
+		send(cli->getFd(), msg.c_str(), msg.length(), 0);
+		return;
+	}
+
+	// Validar que hostname sea exactamente "0" y servername sea exactamente "*"
+	if (hostname != "0" || servername != "*")
+	{
+		std::string msg = "ERROR :Invalid parameters. Usage: USER <username> 0 * :<realname>\r\n";
+		send(cli->getFd(), msg.c_str(), msg.length(), 0);
+		return;
+	}
+
+	// No permitir USER si ya se ha establecido
+	if (cli->hasUser())
+	{
+		std::string msg = "ERROR :Username already set\r\n";
 		send(cli->getFd(), msg.c_str(), msg.length(), 0);
 		return;
 	}
 	
 	cli->setUser(user);
+	cli->setHasUser(true);
+	std::cout << "Client " << cli->getFd() << " - Username set to: " << user << std::endl;
 }
 
 void Server::handleCommand(Client *cli, const std::string &lines)
