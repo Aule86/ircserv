@@ -57,7 +57,7 @@ void Channel::broadcast(const std::string& msg, Client* except)
 		if (except && it->second == except)
 			continue;
 
-			it->second->sendMessage(msg);
+		it->second->sendMessage(msg); //estaba intentado probando cosas
 	}
 }
 

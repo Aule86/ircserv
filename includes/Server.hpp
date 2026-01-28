@@ -20,6 +20,7 @@
 
 #include <map>
 #include <unistd.h>
+#include <stdlib.h>
 
 #define RED "\e[1;31m"
 

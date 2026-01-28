@@ -54,7 +54,7 @@ void Client::setUser(const std::string &user)
 void Client::setHasPass(bool v) { _hasPass = v; }
 void Client::setRegistered(bool v) { _registered = v; }
 
-std::vector<std::string> Client::extractLines()
+/* std::vector<std::string> Client::extractLines()
 {
 	std::vector<std::string>	lines;
 	size_t	pos;
@@ -69,7 +69,26 @@ std::vector<std::string> Client::extractLines()
 		_buffer.erase(0, pos + 1);
 	}
 	return lines;
+} */
+
+std::vector<std::string> Client::extractLines()
+{
+    std::vector<std::string> lines;
+    size_t pos;
+
+    while ((pos = _buffer.find("\n")) != std::string::npos)
+    {
+        std::string line = _buffer.substr(0, pos);
+
+        if (!line.empty() && line[line.size() - 1] == '\r')
+            line.erase(line.size() - 1);
+
+        lines.push_back(line);
+        _buffer.erase(0, pos + 1);
+    }
+    return lines;
 }
+
 
 //::send() llama al sistema que manda bytes por la red
 // Envía un mensaje directamente al socket del cliente
