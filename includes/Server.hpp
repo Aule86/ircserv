@@ -49,6 +49,7 @@ class Server
 		std::string getPassword();
 		Client* getClient(int fd);
 		Client *getClientByName(const std::string &nick) const;
+		void removeClient(int fd);
 
 		//Setters
 		void setPort(int port);
@@ -73,11 +74,15 @@ class Server
 		Channel* getChannel(const std::string &name);
 		Channel* createChannel(const std::string &name, Client *creator);
 		void removeChannel(const std::string &name);
+		std::vector<Channel*> getAllChannels() const;
+
 
 		//cmd
 		void handleJOIN(Client *cli, std::istringstream &iss);
 		void handleKICK(Server *server, Client *cli, std::istringstream &iss);
 		void handlePRIVMSG(Server *server, Client *cli, std::istringstream &iss);
+		void handleQUIT(Client *cli, std::istringstream &iss);
+		
 
 		//errores y replies
 		void sendError(Client *cli, const std::string &code, const std::string &msg);

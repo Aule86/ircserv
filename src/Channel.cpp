@@ -2,8 +2,7 @@
 #include "../includes/Client.hpp"
 #include <iostream>
 
-Channel::Channel(const std::string& name)
-    : _name(name), _topic("") {}
+Channel::Channel(const std::string& name): _name(name), _topic("") {}
 
 Channel::~Channel()
 {
@@ -13,7 +12,7 @@ Channel::~Channel()
 
 const std::string& Channel::getName() const
 {
-    return _name;
+	return _name;
 }
 
 bool Channel::hasClient(Client* client) const
@@ -30,6 +29,7 @@ void Channel::addClient(Client* client)
 
 	_clients[fd] = client;
 }
+
 void Channel::removeClient(Client* client)
 {
 	int fd = client->getFd();
@@ -37,6 +37,7 @@ void Channel::removeClient(Client* client)
 	_clients.erase(fd);
 	_operators.erase(fd);
 }
+
 void Channel::addOperator(Client* client)
 {
 	_operators.insert(client->getFd());

@@ -62,20 +62,20 @@ void Client::setRegistered(bool v) { _registered = v; }
 
 std::vector<std::string> Client::extractLines()
 {
-    std::vector<std::string> lines;
-    size_t pos;
+	std::vector<std::string> lines;
+	size_t pos;
 
-    while ((pos = _buffer.find("\n")) != std::string::npos)
-    {
-        std::string line = _buffer.substr(0, pos);
+	while ((pos = _buffer.find("\n")) != std::string::npos)
+	{
+		std::string line = _buffer.substr(0, pos);
 
-        if (!line.empty() && line[line.size() - 1] == '\r')
-            line.erase(line.size() - 1);
+		if (!line.empty() && line[line.size() - 1] == '\r')
+			line.erase(line.size() - 1);
 
-        lines.push_back(line);
-        _buffer.erase(0, pos + 1);
-    }
-    return lines;
+		lines.push_back(line);
+		_buffer.erase(0, pos + 1);
+	}
+	return lines;
 }
 
 

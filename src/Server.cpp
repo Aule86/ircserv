@@ -154,6 +154,8 @@ void Server::handleCommand(Client *cli, const std::string &lines)
 		handleKICK(this, cli, iss);
 	else if (cmd == "PRIVMSG")
 		handlePRIVMSG(this, cli, iss);
+	else if (cmd == "QUIT")
+		handleQUIT(cli, iss);
 
 	tryRegister(*cli);
 }
@@ -208,6 +210,16 @@ Client *Server::getClientByName(const std::string &nick) const
 			return it->second;
 	}
 	return (NULL);
+}
+
+void Server::removeClient(int fd)
+{
+	std::map<int, Client*>::iterator it = clients.find(fd);
+	if (it != clients.end())
+	{
+		delete it->second;
+		clients.erase(it);
+	}
 }
 
 void Server::ServerClose()
@@ -358,6 +370,18 @@ Channel* Server::getChannel(const std::string &name)
 		return NULL;
 	return it->second;
 }
+
+std::vector<Channel*> Server::getAllChannels() const
+{
+	std::vector<Channel*> result;
+	std::map<std::string, Channel*>::const_iterator it;
+	for (it = channels.begin(); it != channels.end(); ++it)
+	{
+		result.push_back(it->second);
+	}
+	return result;
+}
+
 
 // Crea un nuevo canal y asigna al creador como operador
 Channel* Server::createChannel(const std::string &name, Client *creator)
