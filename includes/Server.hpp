@@ -88,6 +88,11 @@ class Server
 		void sendError(Client *cli, const std::string &code, const std::string &msg);
 		void sendReply(Client *cli, const std::string &code, const std::string &msg);
 
+		//invite
+
+		void handleINVITE(Client *cli, std::istringstream &iss);
+		Client* getClientByNick(const std::string &nick);
+
 };
 
 #endif

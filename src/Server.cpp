@@ -154,8 +154,8 @@ void Server::handleCommand(Client *cli, const std::string &lines)
 		handleKICK(this, cli, iss);
 	else if (cmd == "PRIVMSG")
 		handlePRIVMSG(this, cli, iss);
-	else if (cmd == "QUIT")
-		handleQUIT(cli, iss);
+	else if (cmd == "INVITE")
+		handleINVITE(cli, iss);
 
 	tryRegister(*cli);
 }
