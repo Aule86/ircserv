@@ -95,6 +95,9 @@ class Server
 		void handleINVITE(Client *cli, std::istringstream &iss);
 		Client* getClientByNick(const std::string &nick);
 
+		// part
+		void handlePART(Client *cli, std::istringstream &iss);
+
 };
 
 #endif
