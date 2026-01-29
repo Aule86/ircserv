@@ -23,6 +23,7 @@
 #include <stdlib.h>
 
 #define RED "\e[1;31m"
+#define WHI "\e[0;37m"
 
 class Channel;
 class Client;
@@ -61,6 +62,7 @@ class Server
 		void ServerClose();
 		void new_conection();
 		void receiveData(int fd);
+		void removePollFd(int fd);
 
 		//irc commands
 		void handleCommand(Client *cli, const std::string &line);
