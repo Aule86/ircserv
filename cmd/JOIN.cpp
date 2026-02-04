@@ -24,7 +24,7 @@ void Server::handleJOIN(Client *cli, std::istringstream &iss)
 	ch->addClient(cli);
 
 	// Notificar al cliente que hizo JOIN
-	std::string joinMsg = ":" + cli->getNick() + "!~" + cli->getUser() + "@localhost JOIN " + channelName + "\r\n";
+	std::string joinMsg = ":" + cli->getPrefix() + " JOIN " + channelName + "\r\n";
 	ch->broadcast(joinMsg);
 
 	std::cout << "Client " << cli->getNick() << " joined " << channelName << std::endl;

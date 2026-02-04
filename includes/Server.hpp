@@ -98,6 +98,10 @@ class Server
 		// part
 		void handlePART(Client *cli, std::istringstream &iss);
 
+		//topic
+		void handleTOPIC(Client *cli, std::istringstream &iss);
+
+
 };
 
 #endif

@@ -158,6 +158,9 @@ void Server::handleCommand(Client *cli, const std::string &lines)
 		handleINVITE(cli, iss);
 	else if (cmd == "PART")
 		handlePART(cli, iss);
+	else if (cmd == "TOPIC")
+		handleTOPIC(cli, iss);
+	
 
 	tryRegister(*cli);
 }

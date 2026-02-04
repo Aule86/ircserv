@@ -14,3 +14,5 @@
 #define ERR_NOTEXTTOSEND "412"
 //cuando intentas enviar un mensaje a un canal que no puedes enviar mensajes porque esta en ej:modo +n.
 #define ERR_CANNOTSENDTOCHAN "404" 
+
+#define ERR_

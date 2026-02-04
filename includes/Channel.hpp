@@ -30,6 +30,9 @@ class Channel
 
 		void broadcast(const std::string& msg, Client* except = NULL);
 		const std::map<int, Client*>& getClients() const;
+
+		const std::string& getTopic() const;
+		void setTopic(const std::string& topic);
 };
 
 #endif
