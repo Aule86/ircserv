@@ -1,4 +1,3 @@
-
 #ifndef SERVER
 #define SERVER
 
@@ -84,6 +83,7 @@ class Server
 		void handleKICK(Server *server, Client *cli, std::istringstream &iss);
 		void handlePRIVMSG(Server *server, Client *cli, std::istringstream &iss);
 		void handleQUIT(Client *cli, std::istringstream &iss);
+		void handleMODE(Client *cli, std::istringstream &iss);
 		
 
 		//errores y replies
