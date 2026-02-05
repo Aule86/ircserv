@@ -18,6 +18,15 @@ void Server::handleJOIN(Client *cli, std::istringstream &iss)
 	}
 
 	Channel *ch = getChannel(channelName);
+	if (ch && ch->isInviteOnly() && !ch->isInvited(cli))
+	{
+		// TODO: Aquí deberías verificar si el cliente fue invitado
+		// Por ahora, simplemente rechazamos el JOIN
+		std::string err = ":server 473 " + cli->getNick() + " " + channelName + " :Cannot join channel (+i)\r\n";
+		send(cli->getFd(), err.c_str(), err.length(), 0);
+		return;
+	}
+
 	if (!ch)
 		ch = createChannel(channelName, cli);
 

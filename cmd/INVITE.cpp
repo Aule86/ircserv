@@ -98,6 +98,8 @@ void Server::handleINVITE(Client *cli, std::istringstream &iss)
 	// Confirmar al que invitó
 	std::string confirmMsg = ":server 341 " + cli->getNick() + " " + targetNick + " " + channelName + "\r\n";
 	cli->sendMessage(confirmMsg);
+	
+	ch->addInvited(target); 
 
 	std::cout << cli->getNick() << " invited " << targetNick << " to " << channelName << std::endl;
 }

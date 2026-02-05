@@ -95,13 +95,30 @@ void Server::handleMODE(Client *cli, std::istringstream &iss)
 		}
 		
 		// Procesar cada modo
-		if (flag == 'i')
+		// Procesar cada modo
+	if (flag == 'i')
+	{
+		if (adding)
 		{
-			if (adding)
-				std::cout << "[TODO] +i: Establecer canal como invite-only (solo por invitación)" << std::endl;
-			else
-				std::cout << "[TODO] -i: Quitar modo invite-only del canal" << std::endl;
+			// +i: Establecer canal como invite-only
+			channel->setInviteOnly(true);
+			std::cout << cli->getNick() << " set +i on " << target << std::endl;
+			
+			// Notificar a todos en el canal
+			std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + "@localhost MODE " + target + " +i\r\n";
+			channel->broadcast(modeMsg);
 		}
+		else
+		{
+			// -i: Quitar modo invite-only
+			channel->setInviteOnly(false);
+			std::cout << cli->getNick() << " set -i on " << target << std::endl;
+			
+			// Notificar a todos en el canal
+			std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + "@localhost MODE " + target + " -i\r\n";
+			channel->broadcast(modeMsg);
+		}
+}
 		else if (flag == 't')
 		{
 			if (adding)

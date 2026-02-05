@@ -2,12 +2,14 @@
 #include "../includes/Client.hpp"
 #include <iostream>
 
-Channel::Channel(const std::string& name): _name(name), _topic("") {}
+Channel::Channel(const std::string& name)
+	: _name(name), _topic(""), _inviteOnly(false) {}
 
 Channel::~Channel()
 {
 	_clients.clear();
 	_operators.clear();
+	_invited.clear();
 }
 
 const std::string& Channel::getName() const
@@ -65,4 +67,30 @@ void Channel::broadcast(const std::string& msg, Client* except)
 const std::map<int, Client*>& Channel::getClients() const
 {
 	return _clients;
+}
+
+bool Channel::isInviteOnly() const
+{
+	return _inviteOnly;
+}
+
+// Establece si el canal es solo por invitación
+void Channel::setInviteOnly(bool value)
+{
+	_inviteOnly = value;
+}
+
+void Channel::addInvited(Client* client)
+{
+	_invited.insert(client->getFd());
+}
+
+bool Channel::isInvited(Client* client) const
+{
+	return (_invited.find(client->getFd()) != _invited.end());
+}
+
+void Channel::removeInvited(Client* client)
+{
+	_invited.erase(client->getFd());
 }
