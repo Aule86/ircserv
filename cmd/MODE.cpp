@@ -3,6 +3,7 @@
 #include "../includes/Errors.hpp"
 #include "../includes/Channel.hpp"
 #include <sstream>
+#include <cstdlib>
 
 /*
  * MODE - Comando para establecer/obtener modos de canal
@@ -179,13 +180,44 @@ void Server::handleMODE(Client *cli, std::istringstream &iss)
 		{
 			if (adding)
 			{
+				// +l: Establecer límite de usuarios
 				std::string currentParam = (paramIndex < params.size()) ? params[paramIndex++] : "";
 				if (currentParam.empty())
+				{
+					std::string err = ":server 461 " + cli->getNick() + " MODE :Not enough parameters\r\n";
+					send(cli->getFd(), err.c_str(), err.length(), 0);
 					continue;
-				std::cout << "[TODO] +l: Establecer límite de usuarios en el canal: " << currentParam << std::endl;
+				}
+				
+				// Convertir el parámetro a número
+				int limit = std::atoi(currentParam.c_str());
+				if (limit <= 0)
+				{
+					std::string err = ":server 696 " + cli->getNick() + " " + target + " l :Invalid limit\r\n";
+					send(cli->getFd(), err.c_str(), err.length(), 0);
+					continue;
+				}
+				
+				// Establecer el límite
+				channel->setUserLimit(static_cast<size_t>(limit));
+				std::cout << cli->getNick() << " set +l " << limit << " on " << target << std::endl;
+				
+				// Notificar a todos en el canal
+				std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + "@" + cli->getIp() 
+					+ " MODE " + target + " +l " + currentParam + "\r\n";
+				channel->broadcast(modeMsg);
 			}
 			else
-				std::cout << "[TODO] -l: Quitar límite de usuarios del canal" << std::endl;
+			{
+				// -l: Quitar límite de usuarios
+				channel->removeUserLimit();
+				std::cout << cli->getNick() << " set -l on " << target << std::endl;
+				
+				// Notificar a todos en el canal
+				std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + "@" + cli->getIp() 
+					+ " MODE " + target + " -l\r\n";
+				channel->broadcast(modeMsg);
+			}
 		}
 		else
 		{

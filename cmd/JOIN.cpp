@@ -27,6 +27,20 @@ void Server::handleJOIN(Client *cli, std::istringstream &iss)
 		return;
 	}
 
+	// Verificar límite de usuarios
+	if (ch && ch->hasUserLimit())
+	{
+		size_t currentUsers = ch->getClients().size();
+		size_t maxUsers = ch->getUserLimit();
+		
+		if (currentUsers >= maxUsers)
+		{
+			std::string err = ":server 471 " + cli->getNick() + " " + channelName + " :Cannot join channel (+l)\r\n";
+			send(cli->getFd(), err.c_str(), err.length(), 0);
+			return;
+		}
+	}
+
 	if (!ch)
 		ch = createChannel(channelName, cli);
 

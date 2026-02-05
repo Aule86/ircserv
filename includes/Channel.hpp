@@ -19,6 +19,10 @@ class Channel
 		//MODES
 		bool _hasKey;
 		std::string _key;
+		
+		// Límite de usuarios
+		bool _hasUserLimit;    // ¿Tiene límite activado?
+		size_t _userLimit;     // ¿Cuál es el límite? 
 
 	public:
 		Channel(const std::string& name);
@@ -51,6 +55,12 @@ class Channel
 		const std::string &getKey() const;
 		void setKey(const std::string &key);
 		void removeKey();
+		
+		// Límite de usuarios
+		bool hasUserLimit() const;           // ¿Tiene límite activado?
+		size_t getUserLimit() const;         // ¿Cuál es el límite?
+		void setUserLimit(size_t limit);     // Establecer límite (activa el modo +l)
+		void removeUserLimit();              // Quitar límite (desactiva el modo +l)
 };
 
 #endif

@@ -3,7 +3,7 @@
 #include <iostream>
 
 Channel::Channel(const std::string& name)
-	: _name(name), _topic(""), _inviteOnly(false), _hasKey(false) {}
+	: _name(name), _topic(""), _inviteOnly(false),_hasKey(false), _hasUserLimit(false), _userLimit(0) {}
 
 Channel::~Channel()
 {
@@ -115,4 +115,27 @@ void Channel::removeKey()
 {
 	_hasKey = false;
 	_key.clear();
+}
+// ========== LÍMITE DE USUARIOS ==========
+
+bool Channel::hasUserLimit() const
+{
+	return _hasUserLimit;
+}
+
+size_t Channel::getUserLimit() const
+{
+	return _userLimit;
+}
+
+void Channel::setUserLimit(size_t limit)
+{
+	_hasUserLimit = true;
+	_userLimit = limit;
+}
+
+void Channel::removeUserLimit()
+{
+	_hasUserLimit = false;
+	_userLimit = 0;
 }
