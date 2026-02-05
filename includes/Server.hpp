@@ -84,6 +84,7 @@ class Server
 		void handlePRIVMSG(Server *server, Client *cli, std::istringstream &iss);
 		void handleQUIT(Client *cli, std::istringstream &iss);
 		void handleMODE(Client *cli, std::istringstream &iss);
+		void handleTOPIC(Client cli, std::istringstream &iss);
 		
 
 		//errores y replies

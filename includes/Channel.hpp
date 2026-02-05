@@ -14,6 +14,7 @@ class Channel
 		std::map<int, Client*> _clients; // fd -> Client*
 		std::set<int> _operators;
 		bool _inviteOnly;
+		bool _topicRestricted;
 		std::set<int> _invited;
 
 		//MODES
@@ -46,6 +47,9 @@ class Channel
 
 		bool isInviteOnly() const;
 		void setInviteOnly(bool value);
+
+		bool isTopicRestricted() const;
+        void setTopicRestricted(bool value);
 
 		void addInvited(Client* client);
 		bool isInvited(Client* client) const;

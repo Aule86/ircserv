@@ -154,8 +154,14 @@ void Server::handleCommand(Client *cli, const std::string &lines)
 		handleKICK(this, cli, iss);
 	else if (cmd == "PRIVMSG")
 		handlePRIVMSG(this, cli, iss);
+	else if (cmd == "PART")
+		handlePART(cli, iss);
 	else if (cmd == "INVITE")
 		handleINVITE(cli, iss);
+	else if (cmd == "MODE")
+		handleMODE(cli, iss);
+	else if (cmd == "TOPIC")
+		handleTOPIC(cli, iss);
 
 	tryRegister(*cli);
 }

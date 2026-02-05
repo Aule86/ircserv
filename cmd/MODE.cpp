@@ -3,7 +3,6 @@
 #include "../includes/Errors.hpp"
 #include "../includes/Channel.hpp"
 #include <sstream>
-#include <cstdlib>
 
 /*
  * MODE - Comando para establecer/obtener modos de canal
@@ -95,8 +94,8 @@ void Server::handleMODE(Client *cli, std::istringstream &iss)
 			continue;
 		}
 		
-			// Procesar cada modo
-			// Procesar cada modo
+		// Procesar cada modo
+		// Procesar cada modo
 		if (flag == 'i')
 		{
 			if (adding)
@@ -120,110 +119,74 @@ void Server::handleMODE(Client *cli, std::istringstream &iss)
 				channel->broadcast(modeMsg);
 			}
 		}
-		else if (flag == 't')
-		{
-			if (adding)
-				std::cout << "[TODO] +t: Restringir el comando TOPIC solo a operadores" << std::endl;
-			else
-				std::cout << "[TODO] -t: Permitir que cualquiera cambie el TOPIC" << std::endl;
-		}
-		else if (flag == 'k')
-		{
-			if (adding)
+			else if (flag == 't')
 			{
-				std::string currentParam = (paramIndex < params.size()) ? params[paramIndex++] : "";
-				if (currentParam.empty())
-					continue;
-				std::cout << "[TODO] +k: Establecer password del canal: " << currentParam << std::endl;
-				if (paramIndex >= param.size())
+				std::cout <<" entra en topic "<< std::endl;
+				if (adding)
 				{
-					std::string err = ":server 461 " + cli->getNick() + " MODE: Not enough parameters\r\n";
-					send(cli->getFd(), err.c_str(), err.length(), 0);
-					return ;
+					channel->setTopicRestricted(true);
+					std::cout << cli->getNick() << " set +t on " << target << std::endl;
+					std::string modeMsg =":" + cli->getPrefix() + " MODE " + target + " +t\r\n";
+
+					channel->broadcast(modeMsg);
+
 				}
 
-				std::string key = params[paramIndex++];
-				channel->setKey(key);
-
-				std::string msg = ":" + cli->getPrefix() + " MODE " + target + " +k " + key + "\r\n";
-				channel->broadcast(msg);
-			}
-			else
-			{
-				std::cout << "[TODO] -k: Quitar password del canal" << std::endl;
-				if (!channel->hasKey())
-					return ;
-				channel->removeKey();
-
-				std::string msg = ":" + cli->getPrefix() + " MODE " + target + " -k\r\n";
-				channel->broadcast(msg);
-			}
-		}
-		else if (flag == 'o')
-		{
-			if (adding)
-			{
-				std::string currentParam = (paramIndex < params.size()) ? params[paramIndex++] : "";
-				if (currentParam.empty())
-					continue;
-				std::cout << "[TODO] +o: Dar privilegios de operador al usuario: " << currentParam << std::endl;
-			}
-			else
-			{
-				std::string currentParam = (paramIndex < params.size()) ? params[paramIndex++] : "";
-				if (currentParam.empty())
-					continue;
-				std::cout << "[TODO] -o: Quitar privilegios de operador al usuario: " << currentParam << std::endl;
-			}
-		}
-		else if (flag == 'l')
-		{
-			if (adding)
-			{
-				// +l: Establecer límite de usuarios
-				std::string currentParam = (paramIndex < params.size()) ? params[paramIndex++] : "";
-				if (currentParam.empty())
+				else
 				{
-					std::string err = ":server 461 " + cli->getNick() + " MODE :Not enough parameters\r\n";
-					send(cli->getFd(), err.c_str(), err.length(), 0);
-					continue;
+					channel->setTopicRestricted(false);
+					std::cout << cli->getNick() << " set -t on " << target << std::endl;
+					std::string modeMsg =":" + cli->getPrefix() + " MODE " + target + " -t\r\n";
+
+					channel->broadcast(modeMsg);
 				}
-				
-				// Convertir el parámetro a número
-				int limit = std::atoi(currentParam.c_str());
-				if (limit <= 0)
+			}
+			else if (flag == 'k')
+			{
+				if (adding)
 				{
-					std::string err = ":server 696 " + cli->getNick() + " " + target + " l :Invalid limit\r\n";
-					send(cli->getFd(), err.c_str(), err.length(), 0);
-					continue;
+					std::string currentParam = (paramIndex < params.size()) ? params[paramIndex++] : "";
+					if (currentParam.empty())
+						continue;
+					std::cout << "[TODO] +k: Establecer password del canal: " << currentParam << std::endl;
 				}
-				
-				// Establecer el límite
-				channel->setUserLimit(static_cast<size_t>(limit));
-				std::cout << cli->getNick() << " set +l " << limit << " on " << target << std::endl;
-				
-				// Notificar a todos en el canal
-				std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + "@" + cli->getIp() 
-					+ " MODE " + target + " +l " + currentParam + "\r\n";
-				channel->broadcast(modeMsg);
+				else
+					std::cout << "[TODO] -k: Quitar password del canal" << std::endl;
+			}
+			else if (flag == 'o')
+			{
+				if (adding)
+				{
+					std::string currentParam = (paramIndex < params.size()) ? params[paramIndex++] : "";
+					if (currentParam.empty())
+						continue;
+					std::cout << "[TODO] +o: Dar privilegios de operador al usuario: " << currentParam << std::endl;
+				}
+				else
+				{
+					std::string currentParam = (paramIndex < params.size()) ? params[paramIndex++] : "";
+					if (currentParam.empty())
+						continue;
+					std::cout << "[TODO] -o: Quitar privilegios de operador al usuario: " << currentParam << std::endl;
+				}
+			}
+			else if (flag == 'l')
+			{
+				if (adding)
+				{
+					std::string currentParam = (paramIndex < params.size()) ? params[paramIndex++] : "";
+					if (currentParam.empty())
+						continue;
+					std::cout << "[TODO] +l: Establecer límite de usuarios en el canal: " << currentParam << std::endl;
+				}
+				else
+					std::cout << "[TODO] -l: Quitar límite de usuarios del canal" << std::endl;
 			}
 			else
 			{
-				// -l: Quitar límite de usuarios
-				channel->removeUserLimit();
-				std::cout << cli->getNick() << " set -l on " << target << std::endl;
-				
-				// Notificar a todos en el canal
-				std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + "@" + cli->getIp() 
-					+ " MODE " + target + " -l\r\n";
-				channel->broadcast(modeMsg);
+				std::string err = ":server 472 " + cli->getNick() + " " + flag + " :is unknown mode char to me\r\n";
+				send(cli->getFd(), err.c_str(), err.length(), 0);
 			}
-		}
-		else
-		{
-			std::string err = ":server 472 " + cli->getNick() + " " + flag + " :is unknown mode char to me\r\n";
-			send(cli->getFd(), err.c_str(), err.length(), 0);
-		}
 	}
 	
 	// Respuesta temporal - modo sin cambios
