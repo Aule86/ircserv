@@ -81,7 +81,6 @@ std::vector<std::string> Client::extractLines()
 
 //::send() llama al sistema que manda bytes por la red
 // Envía un mensaje directamente al socket del cliente
-
 void Client::sendMessage(const std::string &msg)
 {
 	::send(_fd, msg.c_str(), msg.size(), 0);

@@ -7,16 +7,16 @@
 // Busca un cliente por su nickname
 Client* Server::getClientByNick(const std::string &nick)
 {
-    // Itera sobre todos los clientes
-    for (std::map<int, Client*>::iterator it = clients.begin();
-         it != clients.end();
-         ++it)
-    {
-        // Compara el nickname
-        if (it->second->getNick() == nick)
-            return it->second;
-    }
-    return (NULL);
+	// Itera sobre todos los clientes
+	for (std::map<int, Client*>::iterator it = clients.begin();
+		it != clients.end();
+		++it)
+	{
+		// Compara el nickname
+		if (it->second->getNick() == nick)
+			return it->second;
+	}
+	return (NULL);
 }
 
 void Server::handleINVITE(Client *cli, std::istringstream &iss)

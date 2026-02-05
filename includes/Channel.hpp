@@ -14,7 +14,11 @@ class Channel
 		std::map<int, Client*> _clients; // fd -> Client*
 		std::set<int> _operators;
 		bool _inviteOnly;
-		std::set<int> _invited; 
+		std::set<int> _invited;
+
+		//MODES
+		bool _hasKey;
+		std::string _key;
 
 	public:
 		Channel(const std::string& name);
@@ -42,6 +46,11 @@ class Channel
 		void addInvited(Client* client);
 		bool isInvited(Client* client) const;
 		void removeInvited(Client* client);
+
+		bool hasKey() const;
+		const std::string &getKey() const;
+		void setKey(const std::string &key);
+		void removeKey();
 };
 
 #endif

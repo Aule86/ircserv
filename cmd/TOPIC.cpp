@@ -62,73 +62,73 @@
 
 void Server::handleTOPIC(Client *cli, std::istringstream &iss)
 {
-    std::string channelName;
-    iss >> channelName;
+	std::string channelName;
+	iss >> channelName;
 
-    if (channelName.empty())
-    {
-        sendError(cli, ERR_NEEDMOREPARAMS, "TOPIC :Not enough parameters");
-        return;
-    }
+	if (channelName.empty())
+	{
+		sendError(cli, ERR_NEEDMOREPARAMS, "TOPIC :Not enough parameters");
+		return;
+	}
 
-    Channel *channel = getChannel(channelName);
-    if (!channel)
-    {
-        sendError(cli, ERR_NOSUCHCHANNEL, channelName); // error no hay ese canal cambiar mas visible
-        return;
-    }
+	Channel *channel = getChannel(channelName);
+	if (!channel)
+	{
+		sendError(cli, ERR_NOSUCHCHANNEL, channelName); // error no hay ese canal cambiar mas visible
+		return;
+	}
 
-    if (!channel->hasClient(cli))
-    {
-        sendError(cli, ERR_NOTONCHANNEL, channelName);
-        return;
-    }
+	if (!channel->hasClient(cli))
+	{
+		sendError(cli, ERR_NOTONCHANNEL, channelName);
+		return;
+	}
 
-    std::string topic;
-    std::getline(iss, topic);
+	std::string topic;
+	std::getline(iss, topic);
 
-    if (!topic.empty() && topic[0] == ' ')
-        topic.erase(0, 1);
-    if (!topic.empty() && topic[0] == ':')
-        topic.erase(0, 1);
+	if (!topic.empty() && topic[0] == ' ')
+		topic.erase(0, 1);
+	if (!topic.empty() && topic[0] == ':')
+		topic.erase(0, 1);
 
-    // 🔹 SOLO CONSULTA
-    if (topic.empty())
-    {
-        if (channel->getTopic().empty())
-            sendReply(cli, "331", channelName + " :No topic is set");
-        else
-        {
-            sendReply(cli, "332", channelName + " " + channel->getTopic());
-            std::cout << "TOPIC DEBUG: [" << channel->getTopic() << "]" << std::endl;
+	// 🔹 SOLO CONSULTA
+	if (topic.empty())
+	{
+		if (channel->getTopic().empty())
+			sendReply(cli, "331", channelName + " :No topic is set");
+		else
+		{
+			sendReply(cli, "332", channelName + " " + channel->getTopic());
+			std::cout << "TOPIC DEBUG: [" << channel->getTopic() << "]" << std::endl;
 
 
-        }
-        return;
-    }
+		}
+		return;
+	}
 
-    // 🔹 CAMBIO DE TOPIC c par el mode channel->isTopicRestricted()
-    if ( !channel->isOperator(cli))
-    {
-        sendError(cli, ERR_CHANOPRIVSNEEDED, channelName);
-        return;
-    }
+	// 🔹 CAMBIO DE TOPIC c par el mode channel->isTopicRestricted()
+	if ( !channel->isOperator(cli))
+	{
+		sendError(cli, ERR_CHANOPRIVSNEEDED, channelName);
+		return;
+	}
 
-    channel->setTopic(topic);
+	channel->setTopic(topic);
 
-    std::string msg = ":" + cli->getPrefix()
-        + " TOPIC " + channelName + " :" + topic + "\r\n";
+	std::string msg = ":" + cli->getPrefix()
+		+ " TOPIC " + channelName + " :" + topic + "\r\n";
 
-    channel->broadcast(msg);
+	channel->broadcast(msg);
 }
 
 
 void Channel::setTopic(const std::string &topic)
 {
-    _topic = topic;
+	_topic = topic;
 }
 
 const std::string& Channel::getTopic() const
 {
-    return _topic;
+	return _topic;
 }

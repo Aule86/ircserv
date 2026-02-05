@@ -156,13 +156,6 @@ void Server::handleCommand(Client *cli, const std::string &lines)
 		handlePRIVMSG(this, cli, iss);
 	else if (cmd == "INVITE")
 		handleINVITE(cli, iss);
-	else if (cmd == "MODE")
-		handleMODE(cli, iss);
-	else if (cmd == "PART")
-		handlePART(cli, iss);
-	else if (cmd == "TOPIC")
-		handleTOPIC(cli, iss);
-	
 
 	tryRegister(*cli);
 }
@@ -227,18 +220,6 @@ void Server::removeClient(int fd)
 		delete it->second;
 		clients.erase(it);
 	}
-}
-
-void Server::removePollFd(int fd)
-{
-    for (std::vector<pollfd>::iterator it = fds.begin(); it != fds.end(); ++it)
-    {
-        if (it->fd == fd)
-        {
-            fds.erase(it);
-            return;
-        }
-    }
 }
 
 void Server::ServerClose()
@@ -320,45 +301,21 @@ void Server::receiveData(int fd)
 	Client *cli = getClient(fd);
 	ssize_t	bytes = recv(fd, tmp, sizeof(tmp) - 1, 0);
 
-	if (bytes == 0)
+	if (bytes <= 0)
 	{
-		std::cout << RED << "Client with fd " << fd << " disconnected." <<  WHI << std::endl;
-		
-		 std::vector<Channel*> chans = getAllChannels();
-        for (size_t i = 0; i < chans.size(); i++)
-            chans[i]->removeClient(cli);
-
-        //eliminar cliente
-        removeClient(fd);
-
-        //quitar de poll(a)
-        removePollFd(fd);
-
-        //cerrar socket
-        close(fd);
-
+		std::cout << RED << "Client with fd " << fd << " disconnected." << std::endl;
 		return;
 
-	}
-	else if (bytes < 0)
+	}else
 	{
-    	/* if (errno == EAGAIN || errno == EWOULDBLOCK)
-        	return; */ // no hay datos aún
-    	//perror("recv");
-    	removeClient(fd);
-    	return;
-	}	
-	
-	cli->setBuffer(std::string(tmp, bytes));
-    std::vector<std::string> lines = cli->extractLines();
-
-    for (size_t i = 0; i < lines.size(); i++)
-    {
-        handleCommand(cli, lines[i]);
-        std::cout << "[CLIENT " << fd << "] " << lines[i] << std::endl;
-    }
-	
-	
+		cli->setBuffer(std::string(tmp, bytes));
+		std::vector<std::string> lines = cli->extractLines();
+		for (size_t i = 0; i < lines.size(); i++)
+		{
+			handleCommand(cli, lines[i]);
+			std::cout << "[CLIENT " << fd << "] " << lines[i] << std::endl;
+		}
+	}
 	return;
 }
 
@@ -384,7 +341,7 @@ void Server::start(int port, std::string password)
 			std::cerr << "poll() failed" << std::endl;
 			break;
 		}
-		for(size_t i = 0; i < fds.size();i++ )
+		for(size_t i = 0; i < fds.size(); i++)
 		{
 			if(fds[i].revents & POLLIN)
 			{
@@ -392,8 +349,6 @@ void Server::start(int port, std::string password)
 				{
 					std::cout   << "New connection incoming..." << std::endl;
 					new_conection();
-					
-
 				}
 				else
 				{

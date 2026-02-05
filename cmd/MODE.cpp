@@ -94,31 +94,31 @@ void Server::handleMODE(Client *cli, std::istringstream &iss)
 			continue;
 		}
 		
-		// Procesar cada modo
-		// Procesar cada modo
-	if (flag == 'i')
-	{
-		if (adding)
+			// Procesar cada modo
+			// Procesar cada modo
+		if (flag == 'i')
 		{
-			// +i: Establecer canal como invite-only
-			channel->setInviteOnly(true);
-			std::cout << cli->getNick() << " set +i on " << target << std::endl;
-			
-			// Notificar a todos en el canal
-			std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + cli->getPrefix() + target + " +i\r\n";
-			channel->broadcast(modeMsg);
+			if (adding)
+			{
+				// +i: Establecer canal como invite-only
+				channel->setInviteOnly(true);
+				std::cout << cli->getNick() << " set +i on " << target << std::endl;
+				
+				// Notificar a todos en el canal
+				std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + cli->getPrefix() + target + " +i\r\n";
+				channel->broadcast(modeMsg);
+			}
+			else
+			{
+				// -i: Quitar modo invite-only
+				channel->setInviteOnly(false);
+				std::cout << cli->getNick() << " set -i on " << target << std::endl;
+				
+				// Notificar a todos en el canal
+				std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + cli->getPrefix() + target + " -i\r\n";
+				channel->broadcast(modeMsg);
+			}
 		}
-		else
-		{
-			// -i: Quitar modo invite-only
-			channel->setInviteOnly(false);
-			std::cout << cli->getNick() << " set -i on " << target << std::endl;
-			
-			// Notificar a todos en el canal
-			std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + cli->getPrefix() + target + " -i\r\n";
-			channel->broadcast(modeMsg);
-		}
-}
 		else if (flag == 't')
 		{
 			if (adding)
@@ -134,9 +134,29 @@ void Server::handleMODE(Client *cli, std::istringstream &iss)
 				if (currentParam.empty())
 					continue;
 				std::cout << "[TODO] +k: Establecer password del canal: " << currentParam << std::endl;
+				if (paramIndex >= param.size())
+				{
+					std::string err = ":server 461 " + cli->getNick() + " MODE: Not enough parameters\r\n";
+					send(cli->getFd(), err.c_str(), err.length(), 0);
+					return ;
+				}
+
+				std::string key = params[paramIndex++];
+				channel->setKey(key);
+
+				std::string msg = ":" + cli->getPrefix() + " MODE " + target + " +k " + key + "\r\n";
+				channel->broadcast(msg);
 			}
 			else
+			{
 				std::cout << "[TODO] -k: Quitar password del canal" << std::endl;
+				if (!channel->hasKey())
+					return ;
+				channel->removeKey();
+
+				std::string msg = ":" + cli->getPrefix() + " MODE " + target + " -k\r\n";
+				channel->broadcast(msg);
+			}
 		}
 		else if (flag == 'o')
 		{
