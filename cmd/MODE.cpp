@@ -105,7 +105,7 @@ void Server::handleMODE(Client *cli, std::istringstream &iss)
 			std::cout << cli->getNick() << " set +i on " << target << std::endl;
 			
 			// Notificar a todos en el canal
-			std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + "@localhost MODE " + target + " +i\r\n";
+			std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + cli->getPrefix() + target + " +i\r\n";
 			channel->broadcast(modeMsg);
 		}
 		else
@@ -115,7 +115,7 @@ void Server::handleMODE(Client *cli, std::istringstream &iss)
 			std::cout << cli->getNick() << " set -i on " << target << std::endl;
 			
 			// Notificar a todos en el canal
-			std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + "@localhost MODE " + target + " -i\r\n";
+			std::string modeMsg = ":" + cli->getNick() + "!~" + cli->getUser() + cli->getPrefix() + target + " -i\r\n";
 			channel->broadcast(modeMsg);
 		}
 }

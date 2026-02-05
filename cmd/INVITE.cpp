@@ -92,7 +92,7 @@ void Server::handleINVITE(Client *cli, std::istringstream &iss)
 	}
 
 	// Todo OK - Enviar invitación al usuario target
-	std::string inviteMsg = ":" + cli->getNick() + "!~" + cli->getUser() + "@localhost INVITE " + targetNick + " " + channelName + "\r\n";
+	std::string inviteMsg = ":" + cli->getNick() + "!~" + cli->getUser() + cli->getPrefix() + targetNick + " " + channelName + "\r\n";
 	target->sendMessage(inviteMsg);
 
 	// Confirmar al que invitó
