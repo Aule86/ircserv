@@ -2,8 +2,7 @@
 #include "../includes/Client.hpp"
 #include <iostream>
 
-Channel::Channel(const std::string& name)
-	: _name(name), _topic(""), _inviteOnly(false),_hasKey(false), _hasUserLimit(false), _userLimit(0) {}
+Channel::Channel(const std::string& name) : _name(name), _topic(""), _inviteOnly(false), _keyActive(false) {}
 
 Channel::~Channel()
 {
@@ -80,6 +79,17 @@ void Channel::setInviteOnly(bool value)
 	_inviteOnly = value;
 }
 
+bool Channel::isKeyActive() const
+{ 
+	return _keyActive;
+}
+
+void Channel::setKeyActive(bool value)
+{
+	_keyActive = value;
+}
+
+
 void Channel::addInvited(Client* client)
 {
 	_invited.insert(client->getFd());
@@ -95,27 +105,6 @@ void Channel::removeInvited(Client* client)
 	_invited.erase(client->getFd());
 }
 
-bool Channel::hasKey() const
-{
-	return _hasKey;
-}
-
-const std::string &Channel::getKey() const
-{
-	return _key;
-}
-
-void Channel::setKey(const std::string &key)
-{
-	_hasKey = true;
-	_key = key;
-}
-
-void Channel::removeKey()
-{
-	_hasKey = false;
-	_key.clear();
-}
 // ========== LÍMITE DE USUARIOS ==========
 
 bool Channel::hasUserLimit() const

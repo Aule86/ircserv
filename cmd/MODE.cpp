@@ -145,13 +145,18 @@ void Server::handleMODE(Client *cli, std::istringstream &iss)
 			{
 				if (adding)
 				{
-					std::string currentParam = (paramIndex < params.size()) ? params[paramIndex++] : "";
-					if (currentParam.empty())
-						continue;
-					std::cout << "[TODO] +k: Establecer password del canal: " << currentParam << std::endl;
+					channel->setKeyActive(true);
+					std::cout << cli->getNick() << " set +k on " << target << std::endl;
+					std::string modeMsg = ":" + cli->getPrefix() + " MODE " + target + " +k \r\n";
+					channel->broadcast(modeMsg);
 				}
 				else
-					std::cout << "[TODO] -k: Quitar password del canal" << std::endl;
+				{
+					channel->setKeyActive(false);
+					std::cout << cli->getNick() << " set -k on " << target << std::endl;
+					std::string modeMsg = ":" + cli->getPrefix() + " MODE " + target + " -k\r\n";
+					channel->broadcast(modeMsg);
+				}
 			}
 			else if (flag == 'o')
 			{
@@ -181,11 +186,6 @@ void Server::handleMODE(Client *cli, std::istringstream &iss)
 				}
 				else
 					std::cout << "[TODO] -l: Quitar límite de usuarios del canal" << std::endl;
-			}
-			else
-			{
-				std::string err = ":server 472 " + cli->getNick() + " " + flag + " :is unknown mode char to me\r\n";
-				send(cli->getFd(), err.c_str(), err.length(), 0);
 			}
 	}
 	
