@@ -171,32 +171,50 @@ void Server::handleMODE(Client *cli, std::istringstream &iss)
 			}
 			else if (flag == 'o')
 			{
+				std::string opNick;
+				if (paramIndex < params.size())
+					opNick = params[paramIndex++];
+				else
+					opNick = "";
+				if (opNick.empty())
+					continue;
+				
+				Client *opClient = channel->getClientByName(opNick);
+				if (!opClient)
+					continue;
 				if (adding)
 				{
-					std::string currentParam = (paramIndex < params.size()) ? params[paramIndex++] : "";
-					if (currentParam.empty())
-						continue;
-					std::cout << "[TODO] +o: Dar privilegios de operador al usuario: " << currentParam << std::endl;
+					channel->addOperator(opClient);
+					std::string modeMsg = ":" + cli->getPrefix() + " MODE " + target + " +o " + opNick + "\r\n";
+					channel->broadcast(modeMsg);
 				}
 				else
 				{
-					std::string currentParam = (paramIndex < params.size()) ? params[paramIndex++] : "";
-					if (currentParam.empty())
-						continue;
-					std::cout << "[TODO] -o: Quitar privilegios de operador al usuario: " << currentParam << std::endl;
+					channel->removeOperator(opClient);
+					std::string modeMsg = ":" + cli->getPrefix() + " MODE " + target + " -o " + opNick + "\r\n";
+					channel->broadcast(modeMsg);
 				}
 			}
 			else if (flag == 'l')
 			{
 				if (adding)
 				{
-					std::string currentParam = (paramIndex < params.size()) ? params[paramIndex++] : "";
-					if (currentParam.empty())
+					std::string limitStr;
+					if (paramIndex < params.size())
+						limitStr = params[paramIndex++];
+					else
 						continue;
-					std::cout << "[TODO] +l: Establecer límite de usuarios en el canal: " << currentParam << std::endl;
+					int limit = std::stoi(limitStr);
+					channel->setUserLimit(limit);
+					std::string modeMsg = ":" + cli->getPrefix() + " MODE " + target + " +l " + limitStr + "\r\n";
+					channel->broadcast(modeMsg);
 				}
 				else
-					std::cout << "[TODO] -l: Quitar límite de usuarios del canal" << std::endl;
+				{
+					channel->removeUserLimit();
+					std::string modeMsg = ":" + cli->getPrefix() + " MODE " + target + " -l\r\n";
+					channel->broadcast(modeMsg);
+				}
 			}
 	}
 	

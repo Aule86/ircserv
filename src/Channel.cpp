@@ -49,6 +49,25 @@ bool Channel::isOperator(Client* client) const
 	return (_operators.find(client->getFd()) != _operators.end());
 }
 
+Client* Channel::getClientByName(const std::string& nick)
+{
+	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+	{
+		if (it->second->getNick() == nick)
+			return it->second;
+	}
+	return nullptr;
+}
+
+// Quita un operador del canal
+void Channel::removeOperator(Client* client)
+{
+	if (!client) return;
+	_operators.erase(client->getFd());
+}
+
+
+
 // Envía un mensaje a todos los clientes del canal
 void Channel::broadcast(const std::string& msg, Client* except)
 {

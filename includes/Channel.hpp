@@ -24,6 +24,8 @@ class Channel
 		bool _hasUserLimit;    // ¿Tiene límite activado?
 		size_t _userLimit;     // ¿Cuál es el límite? 
 
+
+
 	public:
 		Channel(const std::string& name);
 		~Channel();
@@ -37,6 +39,8 @@ class Channel
 
 		void addOperator(Client* client);
 		bool isOperator(Client* client) const;
+		Client* getClientByName(const std::string& nick);
+		void removeOperator(Client* client);
 
 		void broadcast(const std::string& msg, Client* except = NULL);
 		const std::map<int, Client*>& getClients() const;
@@ -48,7 +52,7 @@ class Channel
 		void setInviteOnly(bool value);
 
 		bool isTopicRestricted() const;
-        void setTopicRestricted(bool value);
+		void setTopicRestricted(bool value);
 		bool isKeyActive() const;
 		void setKeyActive(bool value);
 
