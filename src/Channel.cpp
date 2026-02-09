@@ -87,8 +87,20 @@ bool Channel::isKeyActive() const
 void Channel::setKeyActive(bool value)
 {
 	_keyActive = value;
+	if (!value)
+		_key.clear();
 }
 
+void Channel::setKey(const std::string &key)
+{
+	_key = key;
+	_keyActive = true;
+}
+
+const std::string &Channel::getKey() const
+{
+	return _key;
+}
 
 void Channel::addInvited(Client* client)
 {

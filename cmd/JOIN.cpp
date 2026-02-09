@@ -43,11 +43,15 @@ void Server::handleJOIN(Client *cli, std::istringstream &iss)
 			send(cli->getFd(), err.c_str(), err.length(), 0);
 			return;
 		}
+	}
 	if (ch && ch->isKeyActive())
 	{
-		std::string err = ":server 475 " + cli->getNick() + " " + channelName + " :Cannot join\r\n";
-		send(cli->getFd(), err.c_str(), err.length(), 0);
-		return ; 
+		if (key.empty() || key != ch->getKey())
+		{
+			std::string err = ":server 475 " + cli->getNick() + " " + channelName + " :Cannot join\r\n";
+			send(cli->getFd(), err.c_str(), err.length(), 0);
+			return ;
+		}
 	}
 
 	if (!ch)

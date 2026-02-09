@@ -18,6 +18,7 @@ class Channel
 		std::set<int> _invited;
 
 		bool _keyActive;
+		std::string _key;
 		
 		// Límite de usuarios
 		bool _hasUserLimit;    // ¿Tiene límite activado?
@@ -50,6 +51,9 @@ class Channel
         void setTopicRestricted(bool value);
 		bool isKeyActive() const;
 		void setKeyActive(bool value);
+
+		void setKey(const std::string &key);
+		const std::string &getKey() const;
 
 		void addInvited(Client* client);
 		bool isInvited(Client* client) const;

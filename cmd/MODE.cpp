@@ -145,7 +145,18 @@ void Server::handleMODE(Client *cli, std::istringstream &iss)
 			{
 				if (adding)
 				{
-					channel->setKeyActive(true);
+					std::string key;
+					if (paramIndex < params.size())
+						key = params[paramIndex++];
+					else
+						key = "";
+					if (key.empty())
+					{
+						std::string err = ":server 461 " + cli->getNick() + " MODE :Not enough parameters\r\n";
+						send(cli->getFd(), err.c_str(), err.length(), 0);
+						return;
+					}
+					channel->setKey(key);
 					std::cout << cli->getNick() << " set +k on " << target << std::endl;
 					std::string modeMsg = ":" + cli->getPrefix() + " MODE " + target + " +k \r\n";
 					channel->broadcast(modeMsg);
