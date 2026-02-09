@@ -227,6 +227,18 @@ void Server::removeClient(int fd)
 		clients.erase(it);
 	}
 }
+void Server::removePollFd(int fd)
+{
+    for (std::vector<pollfd>::iterator it = fds.begin(); it != fds.end(); ++it)
+    {
+        if (it->fd == fd)
+        {
+            fds.erase(it);
+            return;
+        }
+    }
+}
+
 
 void Server::ServerClose()
 {
@@ -307,23 +319,48 @@ void Server::receiveData(int fd)
 	Client *cli = getClient(fd);
 	ssize_t	bytes = recv(fd, tmp, sizeof(tmp) - 1, 0);
 
-	if (bytes <= 0)
+	if (bytes == 0)
 	{
-		std::cout << RED << "Client with fd " << fd << " disconnected." << std::endl;
+		std::cout << RED << "Client with fd " << fd << " disconnected." <<  WHI << std::endl;
+		
+		 std::vector<Channel*> chans = getAllChannels();
+        for (size_t i = 0; i < chans.size(); i++)
+            chans[i]->removeClient(cli);
+
+        //eliminar cliente
+        removeClient(fd);
+
+        //quitar de poll(a)
+        removePollFd(fd);
+
+        //cerrar socket
+        close(fd);
+
 		return;
 
-	}else
-	{
-		cli->setBuffer(std::string(tmp, bytes));
-		std::vector<std::string> lines = cli->extractLines();
-		for (size_t i = 0; i < lines.size(); i++)
-		{
-			handleCommand(cli, lines[i]);
-			std::cout << "[CLIENT " << fd << "] " << lines[i] << std::endl;
-		}
 	}
+	else if (bytes < 0)
+	{
+    	/* if (errno == EAGAIN || errno == EWOULDBLOCK)
+        	return; */ // no hay datos aún
+    	//perror("recv");
+    	removeClient(fd);
+    	return;
+	}	
+	
+	cli->setBuffer(std::string(tmp, bytes));
+    std::vector<std::string> lines = cli->extractLines();
+
+    for (size_t i = 0; i < lines.size(); i++)
+    {
+        handleCommand(cli, lines[i]);
+        std::cout << "[CLIENT " << fd << "] " << lines[i] << std::endl;
+    }
+	
+	
 	return;
 }
+
 
 void Server::start(int port, std::string password)
 {
