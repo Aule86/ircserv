@@ -1,6 +1,7 @@
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
 #include <iostream>
+#include <string>
 
 Channel::Channel(const std::string& name) : _name(name), _topic(""), _inviteOnly(false), _keyActive(false) {}
 
@@ -56,7 +57,7 @@ Client* Channel::getClientByName(const std::string& nick)
 		if (it->second->getNick() == nick)
 			return it->second;
 	}
-	return nullptr;
+	return NULL;
 }
 
 // Quita un operador del canal

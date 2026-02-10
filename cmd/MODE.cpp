@@ -204,7 +204,7 @@ void Server::handleMODE(Client *cli, std::istringstream &iss)
 						limitStr = params[paramIndex++];
 					else
 						continue;
-					int limit = std::stoi(limitStr);
+					int limit = std::atoi(limitStr.c_str());
 					channel->setUserLimit(limit);
 					std::string modeMsg = ":" + cli->getPrefix() + " MODE " + target + " +l " + limitStr + "\r\n";
 					channel->broadcast(modeMsg);
