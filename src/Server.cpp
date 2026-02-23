@@ -242,11 +242,17 @@ void Server::removePollFd(int fd)
 
 void Server::ServerClose()
 {
-	for (size_t i = 0; i < fds.size(); ++i)
-	{
-		close(fds[i].fd);
-	}
-	fds.clear();
+    for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
+        delete it->second;
+    clients.clear();
+
+    for (std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); ++it)
+        delete it->second;
+    channels.clear();
+
+    for (size_t i = 0; i < fds.size(); ++i)
+        close(fds[i].fd);
+    fds.clear();
 }
 
 void Server::SignalResponse(int signum)
@@ -368,7 +374,9 @@ void Server::start(int port, std::string password)
 	while(Server::signal == false)
 	{
 		if(poll(fds.data(), fds.size(), -1) == -1)
-		{
+		{	
+			if (Server::signal) // ← si la señal ya fue recibida, salimos limpiamente
+				break;
 			std::cerr << "poll() failed" << std::endl;
 			break;
 		}

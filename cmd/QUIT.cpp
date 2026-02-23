@@ -32,20 +32,22 @@ static void removeClientFromChannels(Server *server, Client *client, const std::
 
 void Server::handleQUIT(Client *cli, std::istringstream &iss)
 {
-	std::string message;
+    std::string message;
 
-	if (iss.peek() == ' ')
-		iss.get();
-	std::getline(iss, message);
-	if (!message.empty() && message[0] == ':')
-		message = message.substr(1);
-	std::string quitMsg = buildQuitMsg(cli, message);
+    if (iss.peek() == ' ')
+        iss.get();
+    std::getline(iss, message);
+    if (!message.empty() && message[0] == ':')
+        message = message.substr(1);
 
-	removeClientFromChannels(this, cli, quitMsg);
-	cli->sendMessage(quitMsg);
-	removeClient(cli->getFd());
+    std::string quitMsg = buildQuitMsg(cli, message);
 
-	close(cli->getFd());
-	std::cout << "[CLIENT " << cli->getFd() << "] QUIT: " << message << std::endl;
+    removeClientFromChannels(this, cli, quitMsg);
+    cli->sendMessage(quitMsg);
 
+    int fd = cli->getFd(); // ← guardamos el fd ANTES de destruir cli
+    removeClient(fd);      // ← aquí se hace delete cli, el puntero queda inválido
+
+    close(fd);             // ← usamos la variable local, no cli->getFd()
+    std::cout << "[CLIENT " << fd << "] QUIT: " << message << std::endl;
 }
